@@ -12,8 +12,9 @@ import {
 } from './style'
 
 const Home = () => {
+    const [newTask, setNewTask] = useState("");
 
-    const tasks = [
+    const [tasks, setTasks] = useState([
         {
             id: 0,
             name: "Comprar refrigerante pro almoço papitos"
@@ -26,23 +27,54 @@ const Home = () => {
             id: 2,
             name: "Teste de task"
         }
-    ]
+    ]);
 
-    const handleTask = (event) => {
+    const handleAddTask = (event) => {
+        event.preventDefault();
 
+        if (newTask === "") return;
+
+        let newItem = {
+            id: `${tasks.length + 1}`,
+            name: newTask
+        }
+
+        setTasks(allTasks => [...allTasks, newItem])
+
+        setNewTask("")
+    }
+
+    const removeTask = (id) => {
+        setTasks(allTasks => allTasks.filter((task) => task.id !== id));
+    }
+
+    const reOrder = (list, startIndex, endIndex) => {
+        const result = Array.from(list)
+        const [removed] = result.splice(startIndex, 1)
+        result.splice(endIndex, 0, removed)
+
+        return result;
     }
 
     function onDragEnd(result) {
-        console.log(result.destination.index, result.source.index)
+        if (!result.destination) {
+            return;
+        }
+
+        const items = reOrder(tasks, result.source.index, result.destination.index)
+        setTasks(items);
     }
 
     return (
         <Container>
             <h1>Tarefas</h1>
             <ContainerForm>
-                <Form action="#">
-                    <div><Input type='text' /></div>
-                    <div><ButtonSubmit>Adicionar</ButtonSubmit></div>
+                <Form onSubmit={handleAddTask}>
+                    <div><Input type='text'
+                        value={newTask}
+                        onChange={(event) => setNewTask(event.target.value)}
+                    /></div>
+                    <div><ButtonSubmit type="submit">Adicionar</ButtonSubmit></div>
                 </Form>
             </ContainerForm>
             <DragDropContext onDragEnd={onDragEnd}>
@@ -53,7 +85,11 @@ const Home = () => {
                             {...provided.droppableProps}
                         >
                             {tasks.map((task, index) => (
-                                <Task key={task.id} task={task} index={index} />
+                                <Task
+                                    key={task.id}
+                                    task={task}
+                                    index={index}
+                                    onRemove={() => removeTask(task.id)} />
                             ))}
                             {provided.placeholder}
                         </ContainerTasks>

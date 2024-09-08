@@ -6,7 +6,7 @@ import {
     ContainerTaskActions
 } from './style'
 
-export function Task({ task, index }) {
+export function Task({ task, index, onRemove }) {
     return (
         <Draggable draggableId={String(task.id)} index={index}>
             {(provided) => (
@@ -16,7 +16,7 @@ export function Task({ task, index }) {
                     ref={provided.innerRef}
                 >
                     <Span>{task.name}</Span>
-                    <ButtonRemover type="button">Remover</ButtonRemover>
+                    <ButtonRemover type="button" onClick={onRemove}>Remover</ButtonRemover>
                     <ButtonFinish type="button">Finalizar</ButtonFinish>
                 </ContainerTaskActions>
             )}
